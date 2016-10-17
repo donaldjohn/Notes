@@ -156,7 +156,33 @@ Object getSecond()
 	Pair<String>[] table = new Pair<String>[10];//ERROR
 为什么不行呢?类型擦除后table的类型是Pair[], 可以转化为Object[]，数组能够记住它的元素类型，如果视图存储一个错误类型会抛出ArrayStoreException。类型擦除会使该机制失效。
 **objarray[0] = new Pair<Employee>()**将可以通过检测,因为这个原因参数化的数组是非法的.
+####6.4 变长参数使用泛型的警告
+	变长参数使用泛型时, JVM实际会创建泛型数组，与6.3的规则冲突，然而此处并不会报错，会产生一个警告，可以使用@SuppressWarning("unchecked")或者@SafeVarargs进行屏蔽。
+####6.5 不能实例化类型参数变量
+	new T(), new T[...], T.class都是非法的
+	可以使用反射实例化变量:
+	first = T.class.newInstance();//错误	
+####6.6 泛型类中不能用泛型定义静态内容
+	private static T singleInstance; //ERROR
+	private static T getSingleInstance() //ERROR
+	{
 
+	}
+####6.7 不能抛出或捕捉泛型类
+* 泛型类不允许继承Throwable
+* catch语句中不允许使用泛型
+但是在约定异常时,可以用泛型
+例如public static <T extends Throwable> void doWork(T t) throws T//OK是合法的
+
+通过这种方式可以抛出检查异常不处理
+
+####6.8 类型擦除后出现冲突
+* equals(T value)会与equals(Object value)冲突
+* 类或类型不能是同一个接口的不同泛型形式
+	可能在同一个类中出现两个相同的桥方法（Bridge Method），进而产生冲突
+
+###7 泛型的继承原则
+* Pair<T> 和 Pair<S> 没有任何关系，不管S和T有什么关系。
 
 
 
